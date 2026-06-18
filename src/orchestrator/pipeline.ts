@@ -83,5 +83,10 @@ export async function runPipeline(event: EventContext, deps: PipelineDeps): Prom
 
   const durationMs = Math.round(performance.now() - startMs);
 
+  const providerName = outcomes[0]?.status === 'fulfilled' ? outcomes[0].value.provider : 'unknown';
+  logger.info(
+    `${event.event} pipeline: ${decision} in ${durationMs}ms (provider=${providerName}, findings=${agg.findings.length})`,
+  );
+
   return { decision, findings: agg.findings, summary: agg.summary, durationMs };
 }

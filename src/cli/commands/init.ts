@@ -28,10 +28,12 @@ export async function initCommand(): Promise<void> {
 
 async function isFullyInstalled(hooksDir: string): Promise<boolean> {
   // A complete install means:
-  //   1. The hooks directory exists.
-  //   2. core.hooksPath points at it (caller already checked this).
-  //   3. At least one of the bundled hook files exists and is executable.
-  // We check (1) and (3) here. The caller guarantees (2) before calling.
+  //   1. The hooks directory exists as a directory.
+  //   2. core.hooksPath points at it (caller guarantees this).
+  //   3. The `pre-commit` hook file exists and is executable.
+  // We intentionally do NOT require every file in the directory to be executable
+  // — the directory may contain non-hook files (README, future hook variants)
+  // that git never invokes.
   try {
     const stat = await fs.stat(hooksDir);
     if (!stat.isDirectory()) return false;
@@ -39,12 +41,12 @@ async function isFullyInstalled(hooksDir: string): Promise<boolean> {
     return false;
   }
 
-  const entries = await fs.readdir(hooksDir, { withFileTypes: true });
-  for (const entry of entries) {
-    if (!entry.isFile()) continue;
-    const fullPath = path.join(hooksDir, entry.name);
-    const fileStat = await fs.stat(fullPath);
-    if (!(fileStat.mode & 0o111)) return false;
+  try {
+    const stat = await fs.stat(path.join(hooksDir, 'pre-commit'));
+    if (!stat.isFile()) return false;
+    if (!(stat.mode & 0o111)) return false;
+    return true;
+  } catch {
+    return false;
   }
-  return entries.length > 0;
 }

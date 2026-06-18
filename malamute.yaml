@@ -5,7 +5,7 @@
 version: 1
 
 # Log level: debug | info | warn | error
-logLevel: info
+logLevel: debug
 
 # Agent provider settings
 providers:

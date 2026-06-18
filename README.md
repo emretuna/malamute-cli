@@ -10,6 +10,8 @@ Unlike traditional Git hook tools that run scripts, Malamute runs specialized AI
 
 Pick the install mode that matches your team's setup. Either way, the bundled git hook resolves the binary on its own — you do not need to manage `PATH` for `git commit` to work.
 
+> If `git commit` doesn't run the pipeline, run `npx malamute doctor`. It prints a checklist covering `core.hooksPath`, hook file presence and permissions, and whether the `malamute` binary resolves from the hook's vantage point.
+
 ### Global install
 
 ```bash
@@ -188,6 +190,25 @@ Exit codes:
 - `3` — agent provider error (for example, `claude` CLI not installed)
 - `4` — not inside a git repository
 - `5` — hook installation error
+
+To confirm the agent actually responded (not just that the hook exited 0), look for the one-line summary the pipeline writes to stdout at `info` level (the default):
+
+```json
+{
+  "ts": "2026-06-18T...",
+  "level": "info",
+  "msg": "pre-commit pipeline: warn in 1823ms (provider=claude-code, findings=1)"
+}
+```
+
+Fields:
+
+- `warn` / `allow` / `block` — the policy decision
+- `1823ms` — total pipeline duration (agent call + aggregation + policy). Stub providers return in 0–5ms; real `claude` is typically 1–15s.
+- `provider=claude-code` — which provider answered (any value other than `claude-code` means a different provider is configured)
+- `findings=N` — number of findings the agent returned
+
+If the line never appears, the hook never ran. Run `malamute doctor` to diagnose.
 
 ### 3. Disable a hook for one commit
 

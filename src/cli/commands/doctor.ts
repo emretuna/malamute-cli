@@ -85,9 +85,7 @@ export async function doctorCommand(): Promise<void> {
         checks.push({
           name: `Hook file executable: ${file.name}`,
           pass: isExec,
-          detail: isExec
-            ? fullPath
-            : `${fullPath} is not executable. Run \`malamute init\` to fix.`,
+          detail: isExec ? fullPath : `${fullPath} is not executable. Run \`malamute init\` to fix.`,
         });
       }
     }
@@ -106,7 +104,7 @@ export async function doctorCommand(): Promise<void> {
       name: 'malamute binary resolvable from hook',
       pass: search.found,
       detail: search.found
-        ? search.path ?? 'on PATH'
+        ? (search.path ?? 'on PATH')
         : 'No `malamute` on PATH and no ancestor node_modules/.bin/malamute. Run `npm i -D malamute-cli` or `npm link`.',
     });
   } else {

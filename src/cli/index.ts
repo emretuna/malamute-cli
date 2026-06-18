@@ -3,6 +3,7 @@ import { Command } from 'commander';
 import { MalamuteError } from '../errors.js';
 import { initCommand } from './commands/init.js';
 import { runCommand } from './commands/run.js';
+import { doctorCommand } from './commands/doctor.js';
 import { configShowCommand, configValidateCommand, configPathCommand } from './commands/config.js';
 
 const require = createRequire(import.meta.url);
@@ -29,6 +30,14 @@ program
   .description('Run the pipeline for a given event (used by hooks)')
   .action((event: string) => {
     runCommand(event).catch(handleError);
+  });
+
+// doctor
+program
+  .command('doctor')
+  .description('Diagnose why the pre-commit hook may not be running')
+  .action(() => {
+    doctorCommand().catch(handleError);
   });
 
 // config
