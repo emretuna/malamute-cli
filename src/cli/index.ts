@@ -4,6 +4,7 @@ import { MalamuteError } from '../errors.js';
 import { initCommand } from './commands/init.js';
 import { runCommand } from './commands/run.js';
 import { doctorCommand } from './commands/doctor.js';
+import { uninstallCommand } from './commands/uninstall.js';
 import { configShowCommand, configValidateCommand, configPathCommand } from './commands/config.js';
 
 const require = createRequire(import.meta.url);
@@ -38,6 +39,14 @@ program
   .description('Diagnose why the pre-commit hook may not be running')
   .action(() => {
     doctorCommand().catch(handleError);
+  });
+
+// uninstall
+program
+  .command('uninstall')
+  .description('Remove Malamute git hooks and clear core.hooksPath')
+  .action(() => {
+    uninstallCommand().catch(handleError);
   });
 
 // config

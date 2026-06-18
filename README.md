@@ -36,6 +36,23 @@ npx malamute config show
 
 The git hook that `malamute init` installs walks upward to find the binary, so `git commit` works without `npx` and without any extra setup — even from sub-directories of monorepos. To get the short `malamute` command in your shell for that project, run `npm link` once inside it.
 
+## Uninstall
+
+To remove the hook (and the `core.hooksPath` config) from a repository:
+
+```bash
+npx malamute uninstall
+```
+
+This deletes `.malamute/hooks/`, removes the `.malamute/` directory, and unsets `core.hooksPath`. If the package itself is no longer installed, the manual fallback is the same three steps:
+
+```bash
+git config --unset core.hooksPath
+rm -rf .malamute
+```
+
+> If `git commit` is failing with `malamute: CLI not found.` and exit code 1, the hook is still wired in this repo but the binary is gone. Run `npx malamute uninstall` to clean it up.
+
 ## Why Malamute?
 
 Modern engineering teams increasingly use coding agents such as Claude Code, Codex, Gemini CLI, OpenCode, and local models.
