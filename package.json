@@ -1,6 +1,6 @@
 {
   "name": "malamute-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "repository": "git+https://github.com/emretuna/malamute-cli.git",
   "homepage": "https://github.com/emretuna/malamute-cli#readme",
