@@ -8,23 +8,31 @@ Unlike traditional Git hook tools that run scripts, Malamute runs specialized AI
 
 ## Install
 
+Pick the install mode that matches your team's setup. Either way, the bundled git hook resolves the binary on its own — you do not need to manage `PATH` for `git commit` to work.
+
+### Global install
+
 ```bash
 npm i -g malamute-cli
 ```
 
-This drops the `malamute` binary on your `PATH`. Verify with:
+Drops `malamute` on your `PATH`. Use this when you want the short command available in every shell session. Verify with `malamute --version`.
 
-```bash
-malamute --version
-```
-
-For a project-local install (recommended when the team shares a single lockfile):
+### Project-local install
 
 ```bash
 npm i -D malamute-cli
 ```
 
-The bundled git hook will fall back to `./node_modules/.bin/malamute` when no global `malamute` is on `PATH`, so either install method works with `malamute init` out of the box.
+The binary lands in `./node_modules/.bin/malamute`. From inside the project directory, use `npx malamute ...` (or `./node_modules/.bin/malamute ...`) for one-off commands:
+
+```bash
+npx malamute init
+npx malamute run pre-commit
+npx malamute config show
+```
+
+The git hook that `malamute init` installs walks upward to find the binary, so `git commit` works without `npx` and without any extra setup — even from sub-directories of monorepos. To get the short `malamute` command in your shell for that project, run `npm link` once inside it.
 
 ## Why Malamute?
 
@@ -97,10 +105,11 @@ Supports:
 
 ## Quick Start
 
-After [`malamute-cli` is installed](#install):
+Pick the path that matches your install. Both end at the same place: a working pre-commit hook.
+
+**Global install:**
 
 ```bash
-# Inside the git repository you want to wire up:
 cd your-repo
 malamute init          # drops the pre-commit hook into .malamute/hooks/
 
@@ -109,6 +118,16 @@ echo "console.log('hi')" > x.js
 git add x.js
 malamute run pre-commit
 # Equivalent: just `git commit -m "..."` — the hook invokes the same pipeline.
+```
+
+**Project-local install** (no `PATH` setup needed for `git commit`):
+
+```bash
+cd your-repo
+npx malamute init
+echo "console.log('hi')" > x.js
+git add x.js
+git commit -m "first commit"   # the hook runs the pipeline automatically
 ```
 
 ### Build from source
@@ -122,6 +141,8 @@ node dist/cli/index.js --version
 ```
 
 ## Sample Usage
+
+> All examples below use the short `malamute` command. If you installed project-locally, prefix with `npx` — the CLI surface is identical.
 
 ### 1. Configure Malamute for your repo
 
