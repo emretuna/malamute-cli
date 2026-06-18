@@ -261,6 +261,10 @@ const result = await orchestrator.runPipeline({
 // result.summary: string
 ```
 
+## Contributing
+
+Maintainers: see [CONTRIBUTING.md](./CONTRIBUTING.md) for the release flow, including the `NPM_TOKEN` setup, `npm version` workflow, and how to recover from a failed publish.
+
 ## Supported Events (Foundation)
 
 The foundation ships with the `pre-commit` pipeline wired end-to-end. The CLI accepts all four event names, but `post-commit`, `pre-push`, and `post-merge` are safe no-ops until their dedicated hook scripts and pipelines are added in a follow-up plan. The `init` step installs only the hook files that exist in the bundled `dist/hooks/` directory, so adding `src/hooks/post-commit` (or any sibling) and re-running `npm run build` is enough to make it installable — no further wiring required.
