@@ -16,7 +16,7 @@
     "node": ">=20"
   },
   "bin": {
-    "malamute": "./dist/cli/index.js"
+    "malamute": "dist/cli/index.js"
   },
   "files": [
     "dist",

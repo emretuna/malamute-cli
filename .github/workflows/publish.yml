@@ -1,3 +1,24 @@
+# Publish workflow. Runs on:
+#   1. Push of a tag matching v* (e.g., v0.1.1)
+#   2. Manual trigger from the Actions tab (workflow_dispatch)
+#
+# To cut a release locally:
+#   npm version patch     # or minor / major
+#   git push --follow-tags
+#
+# Required secrets:
+#   NPM_TOKEN  — npm AUTOMATION token, https://www.npmjs.com/settings/tokens
+#
+# Common failure mode: the publish step exits with `EOTP — This operation
+# requires a one-time password`. This means your npm account's 2FA mode is
+# set to "authorization-and-publishing", which forces every publish through
+# 2FA — including via Automation tokens. Switch the account 2FA mode to
+# "automation-and-publishing" at https://www.npmjs.com/settings to allow CI
+# to publish without prompting for an OTP. See CONTRIBUTING.md for details.
+#
+# This is a SEPARATE workflow from ci.yml. ci.yml runs on every push and PR
+# (lint, format, typecheck, test) but does NOT publish. To publish, push a
+# tag — that's the only path that lands on npm.
 name: publish
 
 on:

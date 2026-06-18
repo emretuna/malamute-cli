@@ -37,9 +37,10 @@ Releases are tag-driven. CI (`.github/workflows/publish.yml`) runs `typecheck`, 
 
 ### One-time setup
 
-1. Create an npm automation token at https://www.npmjs.com/settings/tokens. Pick the "Automation" type.
-2. In the GitHub repo, go to Settings → Secrets and variables → Actions → New repository secret. Name: `NPM_TOKEN`, value: paste the token.
-3. Confirm the package name is available: `npm view malamute-cli`. A 404 means available; a response means taken.
+1. Create an npm automation token at https://www.npmjs.com/settings/tokens. **Token type: Automation.** Enable "Bypass 2FA" if the option appears.
+2. **2FA mode matters.** If your npm account's 2FA mode is "authorization-and-publishing" (the default for new accounts with 2FA enabled), even an Automation token will fail with `EOTP` at publish time. Switch to "automation-and-publishing" mode at https://www.npmjs.com/settings (or wherever the 2FA settings live in your account) so CI can publish without a one-time password. Without this switch, every publish will fail with `This operation requires a one-time password from your authenticator.`
+3. In the GitHub repo, go to Settings → Secrets and variables → Actions → New repository secret. Name: `NPM_TOKEN`, value: paste the token.
+4. Confirm the package name is available: `npm view malamute-cli`. A 404 means available; a response means taken.
 
 ### Cutting a release
 
