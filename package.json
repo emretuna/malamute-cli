@@ -2,11 +2,7 @@
   "name": "malamute-cli",
   "version": "0.1.0",
   "type": "module",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/emretuna/malamute-cli"
-  },
+  "repository": "git+https://github.com/emretuna/malamute-cli.git",
   "homepage": "https://github.com/emretuna/malamute-cli#readme",
   "bugs": "https://github.com/emretuna/malamute-cli/issues",
   "description": "AI orchestration layer that runs specialized agents during repository events.",

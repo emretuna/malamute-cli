@@ -1,4 +1,3 @@
-import { createRequire } from 'node:module';
 import { Command } from 'commander';
 import { MalamuteError } from '../errors.js';
 import { initCommand } from './commands/init.js';
@@ -7,14 +6,16 @@ import { doctorCommand } from './commands/doctor.js';
 import { uninstallCommand } from './commands/uninstall.js';
 import { configShowCommand, configValidateCommand, configPathCommand } from './commands/config.js';
 
-const require = createRequire(import.meta.url);
-const pkg = require('../../package.json') as { version: string };
+// Version is read from package.json by tsup's `define` option at build time
+// and injected as a constant. Falls back to '0.0.0' when running from source.
+declare const __VERSION__: string;
+const VERSION: string = typeof __VERSION__ === 'string' ? __VERSION__ : '0.0.0';
 
 const program = new Command();
 
 program
   .name('malamute')
-  .version(pkg.version)
+  .version(VERSION)
   .description('Malamute — repository intelligence for AI-native teams');
 
 // init

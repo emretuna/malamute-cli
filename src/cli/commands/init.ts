@@ -1,9 +1,12 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
 import { getInstalledHooksPath, installHooks } from '../../git/index.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Resolve the dist/ directory relative to the running script.
+// The CLI is bundled into <pkg>/dist/cli/index.js; hooks live at <pkg>/dist/hooks/.
+// Using process.argv[1] (the script path) avoids ESM-specific syntax that
+// conflicts with TypeScript's DTS generation.
+const distDir = path.resolve(path.dirname(process.argv[1] || ''), '..');
 
 export async function initCommand(): Promise<void> {
   const cwd = process.cwd();
@@ -16,12 +19,7 @@ export async function initCommand(): Promise<void> {
     return;
   }
 
-  // Resolve bundled hook scripts.
-  // tsup bundles everything into dist/cli/index.js, so __dirname at runtime is
-  // <pkg>/dist/cli. Hooks are at <pkg>/dist/hooks.
-  const distDir = path.resolve(__dirname, '..');
   const sourceDir = path.join(distDir, 'hooks');
-
   await installHooks(cwd, sourceDir);
   console.log('Malamute initialized. Hooks installed at .malamute/hooks/.');
 }
