@@ -1,0 +1,37 @@
+# Malamute Configuration
+# Copy this file to .malamute.yaml in your repository root and customize.
+
+# Config schema version (currently 1)
+version: 1
+
+# Log level: debug | info | warn | error
+logLevel: info
+
+# Agent provider settings
+providers:
+  claude-code:
+    # Path or command name for the Claude Code CLI
+    command: claude
+    # Timeout in milliseconds for each agent invocation
+    timeoutMs: 60000
+
+# Event-specific configuration
+events:
+  # Pre-commit hook: runs before each commit to review staged changes
+  pre-commit:
+    enabled: true
+    # Custom prompt for the code review agent.
+    # Placeholders: {{stagedFiles}} and {{diff}} are substituted automatically.
+    # agentPrompt: "Your custom prompt here..."
+
+  # Post-commit hook (not yet implemented, reserved)
+  post-commit:
+    enabled: false
+
+  # Pre-push hook (not yet implemented, reserved)
+  pre-push:
+    enabled: false
+
+  # Post-merge hook (not yet implemented, reserved)
+  post-merge:
+    enabled: false

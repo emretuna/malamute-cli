@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Resolve malamute CLI without requiring global install
+if command -v malamute > /dev/null 2>&1; then
+  exec malamute run pre-commit "$@"
+elif [ -x "node_modules/.bin/malamute" ]; then
+  exec ./node_modules/.bin/malamute run pre-commit "$@"
+else
+  echo "malamute: CLI not found. Install with 'npm install --save-dev malamute-cli'." >&2
+  exit 1
+fi

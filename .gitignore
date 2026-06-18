@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.malamute/
+coverage/
+*.log
+.DS_Store

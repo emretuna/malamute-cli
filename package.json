@@ -1,0 +1,52 @@
+{
+  "name": "malamute-cli",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "description": "AI orchestration layer that runs specialized agents during repository events.",
+  "keywords": [
+    "ai",
+    "git",
+    "hooks",
+    "claude",
+    "code-review",
+    "pre-commit"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "malamute": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src tests",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "commander": "^12",
+    "zod": "^3",
+    "execa": "^9",
+    "simple-git": "^3",
+    "js-yaml": "^4"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "tsup": "^8",
+    "@types/node": "^22",
+    "@types/js-yaml": "^4",
+    "vitest": "^2",
+    "eslint": "^9",
+    "typescript-eslint": "^8",
+    "prettier": "^3"
+  }
+}
