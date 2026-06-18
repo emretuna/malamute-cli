@@ -151,13 +151,13 @@ git commit -m "first commit"   # the hook runs the pipeline automatically
 
 ### Build from source
 
-```bash
-git clone https://github.com/your-org/malamute-cli
+git clone https://github.com/emretuna/malamute-cli
 cd malamute-cli
 npm install
 npm run build
 node dist/cli/index.js --version
-```
+
+````
 
 ## Sample Usage
 
@@ -184,7 +184,7 @@ events:
       Return JSON: { "summary": "...", "findings": [...] }
       Staged files: {{stagedFiles}}
       Diff: {{diff}}
-```
+````
 
 The `{{stagedFiles}}` and `{{diff}}` placeholders are substituted with the actual staged content at runtime.
 

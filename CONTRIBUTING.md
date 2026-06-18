@@ -4,13 +4,13 @@ Thanks for your interest. This document covers the day-to-day work of cutting a 
 
 ## Development setup
 
-```bash
-git clone https://github.com/your-org/malamute-cli
+git clone https://github.com/emretuna/malamute-cli
 cd malamute-cli
 npm install
 npm run build
 node dist/cli/index.js --version
-```
+
+````
 
 The `npm` scripts you'll use most:
 
@@ -39,10 +39,9 @@ Releases are tag-driven. CI (`.github/workflows/publish.yml`) runs `typecheck`, 
 
 1. Create an npm automation token at https://www.npmjs.com/settings/tokens. **Token type: Automation.** Enable "Bypass 2FA" if the option appears.
 2. **2FA mode matters.** If your npm account's 2FA mode is "authorization-and-publishing" (the default for new accounts with 2FA enabled), even an Automation token will fail with `EOTP` at publish time. Switch to "automation-and-publishing" mode at https://www.npmjs.com/settings (or wherever the 2FA settings live in your account) so CI can publish without a one-time password. Without this switch, every publish will fail with `This operation requires a one-time password from your authenticator.`
-3. In the GitHub repo, go to Settings → Secrets and variables → Actions → New repository secret. Name: `NPM_TOKEN`, value: paste the token.
-4. Confirm the package name is available: `npm view malamute-cli`. A 404 means available; a response means taken.
-
-### Cutting a release
+3. **The `repository` field in `package.json` must match the GitHub URL.** The publish workflow uses `--provenance`, which generates a Sigstore bundle that includes the GitHub repo URL. npm validates that `package.json`'s `repository.url` matches the bundle's URL, and rejects the publish with `E422 — Failed to validate repository information` if they don't. If the repo URL ever changes, update `package.json` to match.
+4. In the GitHub repo, go to Settings → Secrets and variables → Actions → New repository secret. Name: `NPM_TOKEN`, value: paste the token.
+5. Confirm the package name is available: `npm view malamute-cli`. A 404 means available; a response means taken.
 
 ```bash
 # On main, with a clean working tree
@@ -56,7 +55,7 @@ npm version major   # 0.1.0 → 1.0.0 (breaking changes)
 
 # Push the commit and the tag
 git push --follow-tags
-```
+````
 
 GitHub Actions picks up the `v*` tag, runs the publish workflow, and the new version lands on npm within ~30 seconds. Watch the run from the Actions tab.
 
