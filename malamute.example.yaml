@@ -5,7 +5,7 @@
 version: 1
 
 # Log level: debug | info | warn | error
-logLevel: debug
+logLevel: info
 
 # Agent provider settings
 providers:
@@ -22,7 +22,7 @@ events:
     enabled: true
     # Custom prompt for the code review agent.
     # Placeholders: {{stagedFiles}} and {{diff}} are substituted automatically.
-    agentPrompt: "Update readme.md to include a new section about installation instructions. Review the following staged files and their diffs:\n\nStaged Files:\n{{stagedFiles}}\n\nDiffs:\n{{diff}}\n\nPlease provide a concise summary of the changes and any suggestions for improvement."
+    agentPrompt: 'Your example prompt here.'
 
   # Post-commit hook (not yet implemented, reserved)
   post-commit:
