@@ -43,3 +43,33 @@ describe('malamute config', () => {
     }
   });
 });
+
+describe('malamute config error paths', () => {
+  it('validate fails and exits 2 with invalid config', async () => {
+    const tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'malamute-cfg-invalid-')));
+    try {
+      await fs.writeFile(path.join(tmpDir, '.malamute.yaml'), 'version: 1\nlogLevel: bogus\n');
+      try {
+        await execFileP('node', [CLI, 'config', 'validate'], { cwd: tmpDir });
+        expect.fail('should have exited non-zero');
+      } catch (err) {
+        const e = err as { code: number; stderr: string };
+        expect(e.code).toBe(2);
+        expect(e.stderr).toMatch(/logLevel/i);
+      }
+    } finally {
+      await fs.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it('path prints absolute path when project config exists', async () => {
+    const tmpDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'malamute-cfg-path-')));
+    try {
+      await fs.writeFile(path.join(tmpDir, '.malamute.yaml'), 'version: 1\n');
+      const { stdout } = await execFileP('node', [CLI, 'config', 'path'], { cwd: tmpDir });
+      expect(stdout.trim()).toMatch(/\.malamute\.yaml$/);
+    } finally {
+      await fs.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
+});

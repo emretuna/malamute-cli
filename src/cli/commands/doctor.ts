@@ -1,7 +1,6 @@
 import path from 'node:path';
-import fs from 'node:fs';
 import fsp from 'node:fs/promises';
-import { execFileSync } from 'node:child_process';
+import { execa } from 'execa';
 import { simpleGit } from 'simple-git';
 import { getInstalledHooksPath } from '../../git/index.js';
 
@@ -99,7 +98,7 @@ export async function doctorCommand(): Promise<void> {
 
   // 5. malamute binary resolvable from the hook's vantage point?
   if (hooksPath) {
-    const search = findMalamute(hooksPath);
+    const search = await findMalamute(hooksPath);
     checks.push({
       name: 'malamute binary resolvable from hook',
       pass: search.found,
@@ -133,14 +132,12 @@ export async function doctorCommand(): Promise<void> {
   if (failed.length > 0) process.exitCode = 1;
 }
 
-function findMalamute(startDir: string): { found: boolean; path: string | null } {
-  // Same logic the hook script uses, ported to TypeScript for the doctor.
+async function findMalamute(startDir: string): Promise<{ found: boolean; path: string | null }> {
   try {
-    const which = execFileSync('sh', ['-c', 'command -v malamute'], {
-      encoding: 'utf-8',
-      stdio: ['ignore', 'pipe', 'ignore'],
+    const { stdout } = await execa('sh', ['-c', 'command -v malamute'], {
+      reject: false,
     });
-    if (which.trim()) return { found: true, path: null };
+    if (stdout.trim()) return { found: true, path: null };
   } catch {
     // not on PATH
   }
@@ -150,7 +147,7 @@ function findMalamute(startDir: string): { found: boolean; path: string | null }
   for (let i = 0; i < 64; i++) {
     const candidate = path.join(dir, 'node_modules', '.bin', 'malamute');
     try {
-      const stat = fs.statSync(candidate);
+      const stat = await fsp.stat(candidate);
       if (stat.isFile() && (stat.mode & 0o111) !== 0) {
         return { found: true, path: candidate };
       }

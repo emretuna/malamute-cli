@@ -7,10 +7,23 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf-8')) a
 };
 
 export default defineConfig({
-  entry: { 'cli/index': 'src/cli/index.ts' },
+  entry: {
+    'cli/index': 'src/cli/index.ts',
+    'config/index': 'src/config/index.ts',
+    'orchestrator/index': 'src/orchestrator/index.ts',
+    'agent/index': 'src/agent/index.ts',
+    'action/index': 'src/action/index.ts',
+    'aggregator/index': 'src/aggregator/index.ts',
+    'context/index': 'src/context/index.ts',
+    'policy/index': 'src/policy/index.ts',
+    'router/index': 'src/router/index.ts',
+    'git/index': 'src/git/index.ts',
+    'errors': 'src/errors.ts',
+    'logger': 'src/logger.ts',
+  },
   format: ['esm'],
   target: 'node20',
-  shims: false,
+  dts: true,
   clean: true,
   outExtension: () => ({ js: '.js' }),
   banner: { js: '#!/usr/bin/env node' },

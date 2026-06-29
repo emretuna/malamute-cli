@@ -7,6 +7,7 @@ import type { PolicyEngine } from '../policy/types.js';
 import type { ActionExecutor } from '../action/types.js';
 import type { PipelineResult } from '../types/result.js';
 import { substitutePlaceholders } from './prompt.js';
+import { ProviderError } from '../errors.js';
 import { logger } from '../logger.js';
 
 export interface PipelineDeps {
@@ -41,6 +42,15 @@ export async function runPipeline(event: EventContext, deps: PipelineDeps): Prom
 
   // Route to provider
   const { provider } = deps.router.route({ task: { prompt, cwd: event.cwd, env: event.env } });
+
+  // Check provider availability before running
+  const available = await provider.isAvailable();
+  if (!available) {
+    throw new ProviderError(
+      `Provider "${provider.name}" is not available. ` +
+      `Check that the "${provider.command}" command is on PATH or install the provider.`,
+    );
+  }
 
   // Run agent
   const outcomes = await Promise.allSettled([

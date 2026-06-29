@@ -6,12 +6,14 @@ import type { AgentRouter, RoutingRequest, RoutingDecision } from '../../src/rou
 import type { ResultAggregator, AgentOutcome, AggregatedResult } from '../../src/aggregator/types.js';
 import type { PolicyEngine, PolicyInput } from '../../src/policy/types.js';
 import type { ActionExecutor, ActionInput } from '../../src/action/types.js';
+import { ProviderError } from '../../src/errors.js';
 import { defaultConfig } from '../../src/config/defaults.js';
 import type { EventContext } from '../../src/types/events.js';
 import type { AgentProvider, AgentTask, AgentResponse } from '../../src/agent/types.js';
 
 function makeStubProvider(content: string): AgentProvider {
   return {
+    command: 'stub',
     name: 'stub',
     isAvailable: async () => true,
     run: async (): Promise<AgentResponse> => ({ provider: 'stub', content, raw: null }),
@@ -120,6 +122,7 @@ describe('runPipeline', () => {
   it('substitutes placeholders in prompt', async () => {
     let captured: AgentTask | undefined;
     const provider: AgentProvider = {
+      command: 'stub',
       name: 'stub',
       isAvailable: async () => true,
       run: async (task: AgentTask): Promise<AgentResponse> => {
@@ -131,5 +134,16 @@ describe('runPipeline', () => {
     await runPipeline(baseEvent, deps);
     expect(captured?.prompt).toContain('a.js');
     expect(captured?.prompt).toContain('diff content');
+  });
+
+  it('throws ProviderError when provider is unavailable', async () => {
+    const unavailableProvider: AgentProvider = {
+      command: 'stub',
+      name: 'stub',
+      isAvailable: async () => false,
+      run: async (): Promise<AgentResponse> => ({ provider: 'stub', content: '', raw: null }),
+    };
+    const { deps } = makeDeps({ provider: unavailableProvider });
+    await expect(runPipeline(baseEvent, deps)).rejects.toThrow(ProviderError);
   });
 });

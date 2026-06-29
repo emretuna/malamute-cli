@@ -89,3 +89,48 @@ describe('malamute run', () => {
     }
   });
 });
+
+describe('malamute run error codes', () => {
+  it('exits 3 when provider binary is not found', async () => {
+    // Create a repo with staged files but no claude on PATH
+    const tmp = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'malamute-run-exit3-')));
+    const repo = path.join(tmp, 'repo');
+    await fs.mkdir(repo, { recursive: true });
+    const git = simpleGit(repo);
+    await git.init();
+    await git.addConfig('user.email', 't@t.com');
+    await git.addConfig('user.name', 't');
+    await fs.writeFile(path.join(repo, 'f.txt'), 'x');
+    await git.add('f.txt');
+    try {
+      // PATH with node but no claude binary anywhere
+      const nodeDir = path.dirname(process.execPath);
+      await execFileP('node', [CLI, 'run', 'pre-commit'], {
+        cwd: repo,
+        env: { ...process.env, PATH: `${nodeDir}:/usr/bin:/bin` },
+      });
+      expect.fail('should have exited non-zero');
+    } catch (err) {
+      const e = err as { code: number; stderr: string; stdout: string };
+      expect(e.code).toBe(3);
+    } finally {
+      await fs.rm(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('exits 4 when not in a git repository', async () => {
+    const tmp = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'malamute-run-exit4-')));
+    const nonRepo = path.join(tmp, 'not-a-repo');
+    await fs.mkdir(nonRepo, { recursive: true });
+
+    try {
+      await execFileP('node', [CLI, 'run', 'pre-commit'], { cwd: nonRepo });
+      expect.fail('should have exited non-zero');
+    } catch (err) {
+      const e = err as { code: number; stderr: string };
+      expect(e.code).toBe(4);
+    } finally {
+      await fs.rm(tmp, { recursive: true, force: true });
+    }
+  });
+});

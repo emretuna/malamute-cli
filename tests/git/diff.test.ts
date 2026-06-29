@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getStagedDiff, getStagedFiles, getRepoRoot } from '../../src/git/diff.js';
+import { GitError } from '../../src/errors.js';
 import { simpleGit } from 'simple-git';
 
 let tmpDir: string;
@@ -58,5 +59,25 @@ describe('git/diff', () => {
     } finally {
       await fs.rm(nonRepo, { recursive: true, force: true });
     }
+  });
+});
+
+describe('git/diff error paths', () => {
+  let nonRepoDir: string;
+
+  beforeAll(async () => {
+    nonRepoDir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'malamute-git-err-')));
+  });
+
+  afterAll(async () => {
+    await fs.rm(nonRepoDir, { recursive: true, force: true });
+  });
+
+  it('getStagedFiles throws GitError outside a git repo', async () => {
+    await expect(getStagedFiles(nonRepoDir)).rejects.toThrow(GitError);
+  });
+
+  it('getStagedDiff throws GitError outside a git repo', async () => {
+    await expect(getStagedDiff(nonRepoDir)).rejects.toThrow(GitError);
   });
 });

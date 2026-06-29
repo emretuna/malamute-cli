@@ -2,13 +2,13 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 const LEVELS: Record<LogLevel, number> = { debug: 0, info: 1, warn: 2, error: 3 };
 
-let currentLevel: LogLevel = parseLevel(process.env['MalamUTE_LOG_LEVEL'] ?? 'info');
+const level: LogLevel = 'info';
+let currentLevel: LogLevel = parseLevel(level);
 
 function parseLevel(s: string): LogLevel {
   if (s in LEVELS) return s as LogLevel;
   return 'info';
 }
-
 export function setLevel(level: LogLevel): void {
   currentLevel = level;
 }

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# malamute hook — do not edit
 set -euo pipefail
 
 # Resolve the malamute CLI. Search order:

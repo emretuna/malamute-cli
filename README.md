@@ -157,7 +157,7 @@ npm install
 npm run build
 node dist/cli/index.js --version
 
-````
+```
 
 ## Sample Usage
 
@@ -184,7 +184,7 @@ events:
       Return JSON: { "summary": "...", "findings": [...] }
       Staged files: {{stagedFiles}}
       Diff: {{diff}}
-````
+```
 
 The `{{stagedFiles}}` and `{{diff}}` placeholders are substituted with the actual staged content at runtime.
 
@@ -244,9 +244,6 @@ malamute config validate
 malamute config path         # prints the project config path (or <none>)
 malamute config show         # prints the merged config as YAML
 
-# Set the log level for a single run:
-MalamUTE_LOG_LEVEL=debug malamute run pre-commit
-```
 
 ### 5. How a finding flows through the pipeline
 

@@ -12,7 +12,7 @@ export interface ClaudeCodeOptions {
 export class ClaudeCodeProvider implements AgentProvider {
   readonly name = 'claude-code';
   private readonly execaFn: typeof execa;
-  private readonly command: string;
+  readonly command: string;
   private readonly env: NodeJS.ProcessEnv;
   private readonly timeoutMs: number;
 

@@ -43,6 +43,11 @@ async function isFullyInstalled(hooksDir: string): Promise<boolean> {
     const stat = await fs.stat(path.join(hooksDir, 'pre-commit'));
     if (!stat.isFile()) return false;
     if (!(stat.mode & 0o111)) return false;
+
+    // Verify the hook file is actually a malamute hook by checking for the sentinel
+    const content = await fs.readFile(path.join(hooksDir, 'pre-commit'), 'utf-8');
+    if (!content.includes('# malamute hook')) return false;
+
     return true;
   } catch {
     return false;

@@ -46,6 +46,7 @@ describe('DefaultContextBuilder', () => {
     });
     expect(out.event).toBe('pre-commit');
     expect(out.stagedFiles.length).toBeGreaterThan(0);
+    expect(out.repoTree).toBeTruthy();
     expect(out.stagedDiff).toBeTruthy();
   });
 

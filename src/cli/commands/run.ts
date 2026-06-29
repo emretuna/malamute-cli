@@ -2,6 +2,7 @@ import { getRepoRoot } from '../../git/index.js';
 import { loadConfig } from '../../config/index.js';
 import { createDefaultRegistry } from '../../orchestrator/index.js';
 import { setLevel } from '../../logger.js';
+import { ConfigError } from '../../errors.js';
 import type { MalamuteEvent } from '../../types/events.js';
 import { ALL_EVENTS } from '../../types/events.js';
 
@@ -45,9 +46,12 @@ export async function runCommand(eventName: string): Promise<void> {
   // Check if pipeline registered
   try {
     orchestrator.events.resolve(event);
-  } catch {
-    console.log(`No pipeline registered for event "${event}", skipping.`);
-    return;
+  } catch (err) {
+    if (err instanceof ConfigError) {
+      console.log(`No pipeline registered for event "${event}", skipping.`);
+      return;
+    }
+    throw err;
   }
 
   // Run pipeline

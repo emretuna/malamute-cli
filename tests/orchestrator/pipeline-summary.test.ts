@@ -13,6 +13,7 @@ import { logger } from '../../src/logger.js';
 
 function makeProvider(): AgentProvider {
   return {
+    command: 'claude',
     name: 'claude-code',
     isAvailable: async () => true,
     run: async (): Promise<AgentResponse> => ({

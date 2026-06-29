@@ -12,6 +12,7 @@ export interface AgentResponse {
 
 export interface AgentProvider {
   readonly name: string;
+  readonly command: string;
   isAvailable(): Promise<boolean>;
   run(task: AgentTask): Promise<AgentResponse>;
 }

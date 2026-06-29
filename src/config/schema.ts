@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const ConfigSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(1).default(1),
   logLevel: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   providers: z
     .object({

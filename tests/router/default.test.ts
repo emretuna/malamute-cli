@@ -6,7 +6,7 @@ import type { AgentProvider } from '../../src/agent/types.js';
 
 const fake: AgentProvider = {
   name: 'fake',
-  isAvailable: async () => true,
+  command: 'fake',
   run: async () => ({ provider: 'fake', content: '', raw: null }),
 };
 

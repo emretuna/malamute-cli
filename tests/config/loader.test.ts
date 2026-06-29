@@ -8,27 +8,22 @@ import { ConfigError } from '../../src/errors.js';
 let tmpRoot: string;
 let cwd: string;
 let originalHome: string | undefined;
-let originalClaudeCmd: string | undefined;
-let originalLogLevel: string | undefined;
+let originalNodeEnv: string | undefined;
 
 beforeEach(async () => {
   tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'malamute-cfg-'));
   cwd = path.join(tmpRoot, 'project');
   await fs.mkdir(cwd, { recursive: true });
   originalHome = process.env['HOME'];
-  originalClaudeCmd = process.env['MalamUTE_CLAUDE_COMMAND'];
-  originalLogLevel = process.env['MalamUTE_LOG_LEVEL'];
-  process.env['HOME'] = tmpRoot; // No user config in this fake home
-  delete process.env['MalamUTE_CLAUDE_COMMAND'];
-  delete process.env['MalamUTE_LOG_LEVEL'];
+  originalNodeEnv = process.env['NODE_ENV'];
+  process.env['HOME'] = tmpRoot;
+  delete process.env['NODE_ENV'];
 });
 
 afterEach(async () => {
   if (originalHome) process.env['HOME'] = originalHome;
-  if (originalClaudeCmd !== undefined) process.env['MalamUTE_CLAUDE_COMMAND'] = originalClaudeCmd;
-  else delete process.env['MalamUTE_CLAUDE_COMMAND'];
-  if (originalLogLevel !== undefined) process.env['MalamUTE_LOG_LEVEL'] = originalLogLevel;
-  else delete process.env['MalamUTE_LOG_LEVEL'];
+  if (originalNodeEnv !== undefined) process.env['NODE_ENV'] = originalNodeEnv;
+  else delete process.env['NODE_ENV'];
   await fs.rm(tmpRoot, { recursive: true, force: true });
 });
 
@@ -95,9 +90,34 @@ events:
     }
   });
 
-  it('applies env overrides for Claude command', async () => {
-    process.env['MalamUTE_CLAUDE_COMMAND'] = '/custom/claude';
+  it('uses env-specific .malamute.{NODE_ENV}.yaml when set', async () => {
+    await fs.writeFile(path.join(cwd, '.malamute.yaml'), 'version: 1\nlogLevel: info\n');
+    process.env['NODE_ENV'] = 'prod';
+    await fs.writeFile(path.join(cwd, '.malamute.prod.yaml'), 'version: 1\nlogLevel: error\n');
     const config = await loadConfig(cwd);
-    expect(config.providers['claude-code']?.command).toBe('/custom/claude');
+    expect(config.logLevel).toBe('error');
+  });
+
+  it('env-specific config wins over base project config', async () => {
+    await fs.writeFile(
+      path.join(cwd, '.malamute.yaml'),
+      'version: 1\nlogLevel: warn\nproviders:\n  claude-code:\n    command: base\n',
+    );
+    process.env['NODE_ENV'] = 'prod';
+    await fs.writeFile(
+      path.join(cwd, '.malamute.prod.yaml'),
+      'version: 1\nlogLevel: error\nproviders:\n  claude-code:\n    command: prod-version\n',
+    );
+    const config = await loadConfig(cwd);
+    expect(config.logLevel).toBe('error');
+    expect(config.providers['claude-code']?.command).toBe('prod-version');
+    expect(config.providers['claude-code']?.timeoutMs).toBe(60_000);
+  });
+
+  it('throws ConfigError when project config file is unreadable', async () => {
+    await fs.writeFile(path.join(cwd, '.malamute.yaml'), 'version: 1\nlogLevel: info\n');
+    // Remove read permission so the file exists but cannot be read
+    await fs.chmod(path.join(cwd, '.malamute.yaml'), 0o200);
+    await expect(loadConfig(cwd)).rejects.toThrow(ConfigError);
   });
 });

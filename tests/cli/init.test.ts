@@ -57,4 +57,23 @@ describe('malamute init', () => {
     expect(result.code).toBe(0);
     expect(result.stdout).toContain('Already initialized');
   });
+
+  it('re-installs when pre-commit hook is missing sentinel', async () => {
+    // First init (hooks may already be installed from previous tests)
+    await run(['init']);
+
+    // Overwrite hook with content that lacks the sentinel
+    const hookFile = path.join(repoDir, '.malamute', 'hooks', 'pre-commit');
+    await fs.writeFile(hookFile, '#!/usr/bin/env bash\necho "not malamute"\n');
+    await fs.chmod(hookFile, 0o755);
+
+    // Second init should detect missing sentinel and re-install
+    const result = await run(['init']);
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain('Malamute initialized');
+
+    // Verify the hook now has the sentinel
+    const content = await fs.readFile(hookFile, 'utf-8');
+    expect(content).toContain('# malamute hook');
+  });
 });
