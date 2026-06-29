@@ -1,6 +1,6 @@
 {
   "name": "malamute-cli",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "type": "module",
   "main": "./dist/cli/index.js",
   "types": "./dist/cli/index.d.ts",
